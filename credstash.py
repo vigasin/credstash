@@ -733,18 +733,18 @@ def get_session(aws_access_key_id=None, aws_secret_access_key=None,
                 aws_session_token=aws_session_token,
                 profile_name=profile_name
             )
-        get_session._last_session = get_session._cached_sessions[aws_access_key_id]
+        get_session._last_sessions[profile_name] = get_session._cached_sessions[aws_access_key_id]
         return get_session._cached_sessions[aws_access_key_id]
     else:
-        if get_session._last_session is None:
-            get_session._last_session = boto3.Session(profile_name=profile_name)
-        return get_session._last_session
+        if profile_name not in get_session._last_sessions:
+            get_session._last_sessions[profile_name] = boto3.Session(profile_name=profile_name)
+        return get_session._last_sessions[profile_name]
 get_session._cached_sessions = {}
-get_session._last_session = None
+get_session._last_sessions = {}
 
 def reset_sessions():
     get_session._cached_sessions = {}
-    get_session._last_session = None
+    get_session._last_sessions = {}
 
 
 def get_assumerole_credentials(arn):
